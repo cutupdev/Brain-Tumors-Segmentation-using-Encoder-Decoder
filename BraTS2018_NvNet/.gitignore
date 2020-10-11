@@ -1,0 +1,18 @@
+# general 
+__pycache__
+*.ipynb*
+.vscode
+
+# custom
+test_script.py
+checkpoint_models/*
+runs/*
+isensee_mixed*
+*.log
+main_label_*.py
+data/
+*.pkl
+*.h5
+*.hf5
+# not ignore
+!.gitkeep
