@@ -9,14 +9,24 @@
 Description:
 Convert data from downloaded version to version ready for nnUNet processing.
 '''
-import os, sys, json, re
+import os, sys, json, re, boto3
 from shutil import copyfile
 from collections import OrderedDict
 
 if __name__ == '__main__':
-    dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
-    training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
-    validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
+    # use_s3 = True # Use s3 bucket
+    # if use_s3:
+    #
+    # else:
+
+
+    dataDir = '/home/ubuntu/data/brats-data/nnUNet_raw_data'
+    training_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    validation_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_ValidationData'
+
+    # dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
+    # training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
+    # validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
 
     preprocessed_data_path = os.path.join(dataDir,'Task001_BrainTumour')
     preprocessed_data_path_train = os.path.join(preprocessed_data_path, 'imagesTr')
