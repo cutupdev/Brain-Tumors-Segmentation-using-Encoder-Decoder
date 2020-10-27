@@ -9,9 +9,25 @@
 Description:
 Convert data from downloaded version to version ready for nnUNet processing.
 '''
-import os, sys, json, re, boto3
+import os, sys, json, re
 from shutil import copyfile
 from collections import OrderedDict
+import nibabel as nib
+
+
+def img_transform(old_filepath, new_filepath):
+    # change '4' labels to '3' labels
+    img = nib.load(old_filepath)
+    img_data = img.get_fdata()
+
+    three_data = img_data.copy()
+    three_data = three_data.astype(int)
+    three_data[three_data == 4] = 3
+
+    new_img = nib.Nifti1Image(three_data, img.affine, img.header)
+    nib.save(new_img, new_filepath)
+    return
+
 
 if __name__ == '__main__':
     # use_s3 = True # Use s3 bucket
@@ -20,13 +36,15 @@ if __name__ == '__main__':
     # else:
 
 
-    dataDir = '/home/ubuntu/data/brats-data/nnUNet_raw_data'
-    training_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
-    validation_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_ValidationData'
+    # dataDir = '/home/ubuntu/data/brats-data/nnUNet_raw_data'
+    # training_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    # validation_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_ValidationData'
 
-    # dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
-    # training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
-    # validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
+    dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
+    training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
+    validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
+
+    reprocess = True
 
     preprocessed_data_path = os.path.join(dataDir,'Task001_BrainTumour')
     preprocessed_data_path_train = os.path.join(preprocessed_data_path, 'imagesTr')
@@ -94,17 +112,25 @@ if __name__ == '__main__':
                     if index < 4:
                         new_fname = 'BRATS_{}_{:04d}.nii.gz'.format(subject_str, index)
                         new_path = os.path.join(preprocessed_data_path_train,new_fname)
+
+
+                        # only copy file if either the file doesn't exist or reprocess is True
+                        if reprocess:
+                            copyfile(filepaths[item], new_path)
+                        else:
+                            if not os.path.isfile(new_path):
+                                copyfile(filepaths[item], new_path)
+
                     else:
                         new_fname = 'BRATS_{}.nii.gz'.format(subject_str)
                         new_path = os.path.join(preprocessed_data_path_train_labels, new_fname)
 
-                    reprocess = False
-                    # only copy file if either the file doesn't exist or reprocess is True
-                    if reprocess:
-                        copyfile(filepaths[item], new_path)
-                    else:
-                        if not os.path.isfile(new_path):
-                            copyfile(filepaths[item], new_path)
+                        if reprocess:
+                            img_transform(filepaths[item], new_path)
+
+                        else:
+                            if not os.path.isfile(new_path):
+                                img_transform(filepaths[item], new_path)
 
                 # Generate items for json file
                 numTraining += 1
