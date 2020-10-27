@@ -36,13 +36,13 @@ if __name__ == '__main__':
     # else:
 
 
-    # dataDir = '/home/ubuntu/data/brats-data/nnUNet_raw_data'
-    # training_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
-    # validation_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_ValidationData'
+    dataDir = '/home/ubuntu/data/brats-data/nnUNet_raw_data'
+    training_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    validation_data_path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_ValidationData'
 
-    dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
-    training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
-    validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
+    # dataDir = '/Users/wslee-2/Data/brats-data/nnUNet_raw_data'
+    # training_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_TrainingData'
+    # validation_data_path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS2020_ValidationData'
 
     reprocess = True
 
