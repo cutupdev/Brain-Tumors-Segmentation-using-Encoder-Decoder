@@ -161,7 +161,7 @@ if __name__ == '__main__':
             "0": "background",
             "1": "non-enhancing tumor",
             "2": "edema",
-            "4": "enhancing tumour"
+            "3": "enhancing tumour"
         }),
         ("numTraining", numTraining),
         ("numTest", numTest),
