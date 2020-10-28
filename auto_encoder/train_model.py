@@ -75,8 +75,8 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 if __name__ == '__main__':
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
-    path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
-    # path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
+    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
 
     history = History() # Initialize history to record training loss
 
