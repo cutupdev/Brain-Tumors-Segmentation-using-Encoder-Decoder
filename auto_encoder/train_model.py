@@ -99,7 +99,10 @@ if __name__ == '__main__':
         for items in list(zip(t1, t2, t1ce, flair, seg))]
 
     # Initialize memory
-    input_shape = (4, 80, 96, 64)
+    input_shape = (len(data_paths), 80, 96, 64)
+    if DEBUG:
+        input_shape = (4, 80, 96, 64)
+
     output_channels = 3
     data = np.empty((len(data_paths),) + input_shape, dtype=np.float32) 
     labels = np.empty((len(data_paths), output_channels) + input_shape[1:], dtype=np.uint8)
@@ -140,12 +143,15 @@ if __name__ == '__main__':
     # Model training
     if DEBUG:
         epochs = 3
+        batch_size = 1
     else:
         epochs = 100
+        batch_size = 32
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     model = build_model(input_shape=input_shape, output_channels=3)
-    model.fit(data, [labels, data], batch_size=32, epochs=epochs, callbacks=[history])
+
+    model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=[history])
     model.save('/home/ubuntu/model_ae_{}_{}'.format(epochs, timestamp))
     print(history.history)
     with open('/home/ubuntu/model_ae_{}_{}_dict'.format(epochs, timestamp), 'wb') as file_pi:
