@@ -76,7 +76,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 if __name__ == '__main__':
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
-    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
 
     history = History() # Initialize history to record training loss
 
@@ -99,16 +99,16 @@ if __name__ == '__main__':
     # Initialize memory
     input_shape = (4, 80, 96, 64)
     output_channels = 3
-    data = np.empty((len(data_paths[:4]),) + input_shape, dtype=np.float32)
-    labels = np.empty((len(data_paths[:4]), output_channels) + input_shape[1:], dtype=np.uint8)
+    data = np.empty((len(data_paths),) + input_shape, dtype=np.float32)
+    labels = np.empty((len(data_paths), output_channels) + input_shape[1:], dtype=np.uint8)
 
     import math
     print('reading images...')
     # Parameters for the progress bar
-    total = len(data_paths[:4])
+    total = len(data_paths)
     step = 25 / total
 
-    for i, imgs in enumerate(data_paths[:4]):
+    for i, imgs in enumerate(data_paths):
         try:
             data[i] = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                                dtype=np.float32)
@@ -125,6 +125,8 @@ if __name__ == '__main__':
 
     # Model training
     model = build_model(input_shape=input_shape, output_channels=3)
-    model.fit(data, [labels, data], batch_size=1, epochs=3, callbacks=[history])
+    model.fit(data, [labels, data], batch_size=32, epochs=100, callbacks=[history])
+    model.save('/home/ubuntu/model_ae_3')
     print(history.history)
-
+    with open('/home/ubuntu/model_ae_3_dict', 'wb') as file_pi:
+        pickle.dump(history.history, file_pi)
