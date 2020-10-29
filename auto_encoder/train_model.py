@@ -74,6 +74,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 
 if __name__ == '__main__':
+    DEBUG = True
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
     path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
@@ -124,8 +125,13 @@ if __name__ == '__main__':
             continue
 
     # Model training
+    if DEBUG:
+        epochs = 3
+    else:
+        epochs = 100
+
     model = build_model(input_shape=input_shape, output_channels=3)
-    model.fit(data, [labels, data], batch_size=32, epochs=100, callbacks=[history])
+    model.fit(data, [labels, data], batch_size=32, epochs=epochs, callbacks=[history])
     model.save('/home/ubuntu/model_ae_3')
     print(history.history)
     with open('/home/ubuntu/model_ae_3_dict', 'wb') as file_pi:
