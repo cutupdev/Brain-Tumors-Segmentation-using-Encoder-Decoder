@@ -18,6 +18,7 @@ from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
 import os
 from keras.callbacks import History
+from datetime import datetime
 
 def read_img(img_path):
     """
@@ -130,9 +131,10 @@ if __name__ == '__main__':
     else:
         epochs = 100
 
+    timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     model = build_model(input_shape=input_shape, output_channels=3)
     model.fit(data, [labels, data], batch_size=32, epochs=epochs, callbacks=[history])
-    model.save('/home/ubuntu/model_ae_3')
+    model.save('/home/ubuntu/model_ae_{}_{}'.format(epochs, timestamp))
     print(history.history)
-    with open('/home/ubuntu/model_ae_3_dict', 'wb') as file_pi:
+    with open('/home/ubuntu/model_ae_{}_{}_dict'.format(epochs, timestamp), 'wb') as file_pi:
         pickle.dump(history.history, file_pi)
