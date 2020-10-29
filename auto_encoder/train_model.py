@@ -101,16 +101,28 @@ if __name__ == '__main__':
     # Initialize memory
     input_shape = (4, 80, 96, 64)
     output_channels = 3
-    data = np.empty((len(data_paths),) + input_shape, dtype=np.float32)
+    data = np.empty((len(data_paths),) + input_shape, dtype=np.float32) 
     labels = np.empty((len(data_paths), output_channels) + input_shape[1:], dtype=np.uint8)
+
+    if DEBUG:
+        data = np.empty((len(data_paths[:4]),) + input_shape, dtype=np.float32)
+        labels = np.empty((len(data_paths[:4]), output_channels) + input_shape[1:], dtype=np.uint8)
 
     import math
     print('reading images...')
     # Parameters for the progress bar
     total = len(data_paths)
-    step = 25 / total
 
-    for i, imgs in enumerate(data_paths):
+    if DEBUG:
+        total = len(data_paths[:4])
+
+    step = 25 / total
+    endpoint = -1
+
+    if DEBUG:
+        endpoint = 4
+
+    for i, imgs in enumerate(data_paths[:endpoint]):
         try:
             data[i] = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                                dtype=np.float32)
