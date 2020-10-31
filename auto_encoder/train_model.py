@@ -16,7 +16,7 @@ from model import build_model  # For creating the model
 import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
-import os
+import os, pickle
 from keras.callbacks import History
 from datetime import datetime
 
@@ -75,7 +75,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 
 if __name__ == '__main__':
-    DEBUG = True
+    DEBUG = False
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
     path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
@@ -99,9 +99,9 @@ if __name__ == '__main__':
         for items in list(zip(t1, t2, t1ce, flair, seg))]
 
     # Initialize memory
-    input_shape = (len(data_paths), 80, 96, 64)
-    if DEBUG:
-        input_shape = (4, 80, 96, 64)
+    input_shape = (4, 80, 96, 64)
+    #if DEBUG:
+    #    input_shape = (4, 80, 96, 64)
 
     output_channels = 3
     data = np.empty((len(data_paths),) + input_shape, dtype=np.float32) 
@@ -145,8 +145,8 @@ if __name__ == '__main__':
         epochs = 3
         batch_size = 1
     else:
-        epochs = 100
-        batch_size = 32
+        epochs = 400
+        batch_size = 2
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     model = build_model(input_shape=input_shape, output_channels=3)
