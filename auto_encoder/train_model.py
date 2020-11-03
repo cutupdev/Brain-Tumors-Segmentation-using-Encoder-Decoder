@@ -133,7 +133,7 @@ if __name__ == '__main__':
                                dtype=np.float32)
             labels[i] = preprocess_label(read_img(imgs['seg']), input_shape[1:])[None, ...]
 
-            if ~np.isfinite(data[i]) or ~np.isfinite(labels[i]):
+            if ~np.isfinite(data[i]).any() or ~np.isfinite(labels[i]).any():
                 print('bad frame found:')
                 print(data_paths[i])
                 bad_frames.append(i)
