@@ -167,7 +167,7 @@ if __name__ == '__main__':
 
     # Setup callbacks
     # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
-    checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights{timestamp}.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
     callbacks_list = [checkpoint]
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
