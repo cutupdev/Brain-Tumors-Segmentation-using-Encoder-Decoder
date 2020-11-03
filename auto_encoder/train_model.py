@@ -17,7 +17,7 @@ import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
 import os, pickle
-from keras.callbacks import History
+from keras.callbacks import History, ModelCheckpoint
 from datetime import datetime
 
 def read_img(img_path):
@@ -75,7 +75,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 
 if __name__ == '__main__':
-    DEBUG = False
+    DEBUG = True
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
     path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
@@ -125,11 +125,18 @@ if __name__ == '__main__':
     if DEBUG:
         endpoint = 4
 
+    bad_frames = [] # keep list of any frames with nan or inf
+
     for i, imgs in enumerate(data_paths[:endpoint]):
         try:
             data[i] = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                                dtype=np.float32)
             labels[i] = preprocess_label(read_img(imgs['seg']), input_shape[1:])[None, ...]
+
+            if ~np.isfinite(data[i]) or ~np.isfinite(labels[i]):
+                print('bad frame found:')
+                print(data_paths[i])
+                bad_frames.append(i)
 
             # Print the progress bar
             print('\r' + f'Progress: '
@@ -140,18 +147,33 @@ if __name__ == '__main__':
             print(f'Something went wrong with {imgs["t1"]}, skipping...\n Exception:\n{str(e)}')
             continue
 
+    # Remove any bad frames
+    if len(bad_frames) > 0:
+        print('removing bad frames:')
+        print(bad_frames)
+        print('before data.shape: {}'.format(data.shape))
+        print('before labels.shape: {}'.format(labels.shape))
+        data = np.delete(data, bad_frames, axis=0)
+        labels = np.delete(labels, bad_frames, axis=0)
+        print('after data.shape: {}'.format(data.shape))
+        print('after labels.shape: {}'.format(labels.shape))
+
     # Model training
+    batch_size = 1
     if DEBUG:
         epochs = 3
-        batch_size = 1
     else:
         epochs = 400
-        batch_size = 2
+
+    # Setup callbacks
+    # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
+    checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights{timestamp}.{epoch:02d}-{val_loss:.2f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
+    callbacks_list = [checkpoint]
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     model = build_model(input_shape=input_shape, output_channels=3)
 
-    model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=[history])
+    model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=callbacks_list)
     model.save('/home/ubuntu/model_ae_{}_{}'.format(epochs, timestamp))
     print(history.history)
     with open('/home/ubuntu/model_ae_{}_{}_dict'.format(epochs, timestamp), 'wb') as file_pi:
