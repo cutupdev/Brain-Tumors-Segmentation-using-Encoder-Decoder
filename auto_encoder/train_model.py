@@ -19,6 +19,7 @@ import re  # For parsing the filenames (to know their modality)
 import os, pickle
 from keras.callbacks import History, ModelCheckpoint, CSVLogger
 from datetime import datetime
+from keras.models import load_model
 
 def read_img(img_path):
     """
@@ -75,7 +76,11 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 
 if __name__ == '__main__':
-    DEBUG = True
+    DEBUG = True # Load only a few images (4) and train for a few epochs (3)
+
+    # Re-load existing model from Keras checkpoint and resume training. If reload_path = '', train as new model
+    reload_path = '/home/ubuntu/checkpoints/model_training_11_03/ae_weights.400-0.00843.hdf5'
+
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
 
@@ -191,7 +196,11 @@ if __name__ == '__main__':
     callbacks_list = [checkpoint, csv_logger]
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
+
     model = build_model(input_shape=input_shape, output_channels=3)
+
+    if reload_path:
+        model.load_weights(reload_path)
 
     model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=callbacks_list)
     model.save('/home/ubuntu/model_ae_{}_{}_tf'.format(epochs, timestamp),save_format='tf')
