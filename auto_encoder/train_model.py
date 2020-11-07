@@ -17,7 +17,7 @@ import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
 import os, pickle
-from keras.callbacks import History, ModelCheckpoint
+from keras.callbacks import History, ModelCheckpoint, CSVLogger
 from datetime import datetime
 
 def read_img(img_path):
@@ -168,13 +168,15 @@ if __name__ == '__main__':
     # Setup callbacks
     # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
     checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
-    callbacks_list = [checkpoint]
+    csv_logger = CSVLogger('/home/ubuntu/checkpoints/log.csv', append=True, separator=',')
+
+    callbacks_list = [checkpoint, csv_logger]
 
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     model = build_model(input_shape=input_shape, output_channels=3)
 
     model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=callbacks_list)
-    model.save('/home/ubuntu/model_ae_{}_{}'.format(epochs, timestamp))
+    model.save('/home/ubuntu/model_ae_{}_{}_tf'.format(epochs, timestamp),save_format='tf')
     print(history.history)
     with open('/home/ubuntu/model_ae_{}_{}_dict'.format(epochs, timestamp), 'wb') as file_pi:
         pickle.dump(history.history, file_pi)
