@@ -167,8 +167,9 @@ if __name__ == '__main__':
 
     # Setup callbacks
     # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
+    timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
-    csv_logger = CSVLogger('/home/ubuntu/checkpoints/log.csv', append=True, separator=',')
+    csv_logger = CSVLogger('/home/ubuntu/checkpoints/log_{}.csv'.format(timestamp), append=True, separator=',')
 
     callbacks_list = [checkpoint, csv_logger]
 
