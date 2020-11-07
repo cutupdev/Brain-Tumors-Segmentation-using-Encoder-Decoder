@@ -78,19 +78,35 @@ if __name__ == '__main__':
     DEBUG = True
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
-    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
 
-    history = History() # Initialize history to record training loss
+    #################### 2018 data #######################
+    # path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
+    #
+    # # Import data
+    # # Get a list of files for all modalities individually
+    # t1 = glob.glob(os.path.join(path, '*GG/*/*t1.nii.gz'))
+    # t2 = glob.glob(os.path.join(path, '*GG/*/*t2.nii.gz'))
+    # flair = glob.glob(os.path.join(path, '*GG/*/*flair.nii.gz'))
+    # t1ce = glob.glob(os.path.join(path, '*GG/*/*t1ce.nii.gz'))
+    # seg = glob.glob(os.path.join(path, '*GG/*/*seg.nii.gz'))  # Ground Truth
+    #
+    # pat = re.compile('.*_(\w*)\.nii\.gz')
+
+    ###################### 2020 data ####################
+
+    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
 
     # Import data
     # Get a list of files for all modalities individually
-    t1 = glob.glob(os.path.join(path, '*GG/*/*t1.nii.gz'))
-    t2 = glob.glob(os.path.join(path, '*GG/*/*t2.nii.gz'))
-    flair = glob.glob(os.path.join(path, '*GG/*/*flair.nii.gz'))
-    t1ce = glob.glob(os.path.join(path, '*GG/*/*t1ce.nii.gz'))
-    seg = glob.glob(os.path.join(path, '*GG/*/*seg.nii.gz'))  # Ground Truth
+    t1 = glob.glob(os.path.join(path, '*/*t1.nii.gz'))
+    t2 = glob.glob(os.path.join(path, '*/*t2.nii.gz'))
+    flair = glob.glob(os.path.join(path, '*/*flair.nii.gz'))
+    t1ce = glob.glob(os.path.join(path, '*/*t1ce.nii.gz'))
+    seg = glob.glob(os.path.join(path, '*/*seg.nii.gz'))  # Ground Truth
 
     pat = re.compile('.*_(\w*)\.nii\.gz')
+
+    history = History()  # Initialize history to record training loss
 
     data_paths = [{
         pat.findall(item)[0]: item
@@ -168,6 +184,7 @@ if __name__ == '__main__':
     # Setup callbacks
     # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
+    timestamp = str(timestamp)
     checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
     csv_logger = CSVLogger('/home/ubuntu/checkpoints/log_{}.csv'.format(timestamp), append=True, separator=',')
 
