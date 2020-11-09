@@ -18,7 +18,7 @@ Keras models for BraTS datasets (2018).
 import keras.backend as K
 from keras.losses import mse
 from keras.layers import Conv3D, Activation, Add, UpSampling3D, Lambda, Dense
-from keras.layers import Input, Reshape, Flatten, Dropout, SpatialDropout3D
+from keras.layers import Input, Reshape, Flatten, Dropout, SpatialDropout3D, Dropout
 from keras.optimizers import Adam as adam
 from keras.models import Model
 import tensorflow as tf
@@ -214,7 +214,7 @@ def loss_VAE(input_shape, z_mean, z_var, weight_L2=0.1, weight_KL=0.1):
 
     return loss_VAE_
 
-def build_model(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1, weight_KL=0.1, dice_e=1e-8):
+def build_model(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1, weight_KL=0.1, dice_e=1e-8, input_dropout_rate=0.5):
     """
     build_model_ae(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1, weight_KL=0.1)
     -------------------------------------------
@@ -238,6 +238,8 @@ def build_model(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1
     `dice_e`: Float, optional
         A small epsilon term to add in the denominator of dice loss to avoid dividing by
         zero and possible gradient explosion. This argument will be passed to loss_gt function.
+    'input_dropout' : Float, optiional
+        Dropout to be used on the input layer. Use '0' for no dropout (pass through all inputs)
 
 
     Returns
@@ -258,6 +260,9 @@ def build_model(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1
 
     ## Input Layer
     inp = Input(input_shape)
+
+    ## Dropout Input Layer (starting 50% for removal of 2 modalities)
+    x = SpatialDropout3D(input_dropout_rate, data_format='channels_first')(x)
 
     ## The Initial Block
     x = Conv3D(
