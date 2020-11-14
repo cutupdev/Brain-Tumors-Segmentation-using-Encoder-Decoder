@@ -79,12 +79,18 @@ if __name__ == '__main__':
     DEBUG = False # Load only a few images (4) and train for a few epochs (3)
     REDUCE_MODALITIES = True  # Select this as True to drop low priority modalities
 
+    # timestamp experiment to organize results
+    timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
+    timestamp = str(timestamp)
 
     output_path_dict = {'aws': '/home/ubuntu/',
-                        'colab': '/content/results/'}
+                        'colab': '/gdrive/Shared drives/CS230 - Term Project/results'}
 
 
     output_path = output_path_dict['colab']
+    output_path = os.path.join(output_path,'experiment_{}'.format(timestamp))
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
     # Re-load existing model from Keras checkpoint and resume training. If reload_path = '', train as new model
     # reload_path = '/home/ubuntu/checkpoints/model_training_11_03/ae_weights.400-0.00843.hdf5'
@@ -208,8 +214,8 @@ if __name__ == '__main__':
 
     # filepath_checkpoint = os.path.join(output_path,'checkpoints','checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5')
     # filepath_csv = os.path.join(output_path,'checkpoints','log_{}.csv'.format(timestamp))
-    filepath_checkpoint = 'ae_weights.{epoch:03d}-{loss:.5f}.hdf5'
-    filepath_csv = 'log_{}.csv'.format(timestamp)
+    filepath_checkpoint = os.path.join(output_path,'ae_weights.{epoch:03d}-{loss:.5f}.hdf5')
+    filepath_csv = os.path.join(output_path, 'log_{}.csv'.format(timestamp))
 
     checkpoint = ModelCheckpoint(filepath = filepath_checkpoint, monitor='loss', verbose=1, save_best_only=True, mode='min')
 
@@ -228,8 +234,8 @@ if __name__ == '__main__':
 
     # filepath_model = os.path.join(output_path,'model_ae_{}_{}_tf'.format(epochs, timestamp))
     # filepath_results_dict = os.path.join(output_path,'model_ae_{}_{}_dict'.format(epochs, timestamp))
-    filepath_model = 'model_ae_{}_{}_tf'.format(epochs, timestamp)
-    filepath_results_dict = 'model_ae_{}_{}_dict'.format(epochs, timestamp)
+    filepath_model = os.path.join(output_path, 'model_ae_{}_{}_tf'.format(epochs, timestamp))
+    filepath_results_dict = os.path.join(output_path, 'model_ae_{}_{}_dict'.format(epochs, timestamp))
     model.save(filepath_model,save_format='tf')
     print(history.history)
     with open(filepath_results_dict.format(epochs, timestamp), 'wb') as file_pi:
