@@ -78,6 +78,13 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 if __name__ == '__main__':
     DEBUG = True # Load only a few images (4) and train for a few epochs (3)
 
+
+    output_path_dict = {'aws': '/home/ubuntu/',
+                        'colab': '/content/results/'}
+
+
+    output_path = output_path_dict['colab']
+
     # Re-load existing model from Keras checkpoint and resume training. If reload_path = '', train as new model
     # reload_path = '/home/ubuntu/checkpoints/model_training_11_03/ae_weights.400-0.00843.hdf5'
     reload_path = ''
@@ -192,8 +199,13 @@ if __name__ == '__main__':
     # checkpoint_filepath = '/home/ubuntu/checkpoints/model_ae_{}'.format(timestamp)'
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     timestamp = str(timestamp)
-    checkpoint = ModelCheckpoint(filepath = '/home/ubuntu/checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5', monitor='loss', verbose=1, save_best_only=True, mode='min')
-    csv_logger = CSVLogger('/home/ubuntu/checkpoints/log_{}.csv'.format(timestamp), append=True, separator=',')
+
+    filepath_checkpoint = os.path.join(output_path,'checkpoints','checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5')
+    filepath_csv = os.path.join(output_path,'checkpoints','log_{}.csv'.format(timestamp))
+
+    checkpoint = ModelCheckpoint(filepath = filepath_checkpoint, monitor='loss', verbose=1, save_best_only=True, mode='min')
+
+    csv_logger = CSVLogger(filepath_csv, append=True, separator=',')
 
     callbacks_list = [checkpoint, csv_logger]
 
@@ -205,7 +217,10 @@ if __name__ == '__main__':
         model.load_weights(reload_path)
 
     model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=callbacks_list)
-    model.save('/home/ubuntu/model_ae_{}_{}_tf'.format(epochs, timestamp),save_format='tf')
+
+    filepath_model = os.path.join(output_path,'model_ae_{}_{}_tf'.format(epochs, timestamp))
+    filepath_results_dict = os.path.join(output_path,'model_ae_{}_{}_dict'.format(epochs, timestamp))
+    model.save(filepath_model,save_format='tf')
     print(history.history)
-    with open('/home/ubuntu/model_ae_{}_{}_dict'.format(epochs, timestamp), 'wb') as file_pi:
+    with open(filepath_results_dict.format(epochs, timestamp), 'wb') as file_pi:
         pickle.dump(history.history, file_pi)
