@@ -12,7 +12,7 @@ Description: train model built in model.py
 
 import SimpleITK as sitk  # For loading the dataset
 import numpy as np  # For data manipulation
-from model import build_model  # For creating the model
+from model_reconstruct import build_model  # For creating the model
 import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
@@ -76,7 +76,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 
 if __name__ == '__main__':
-    DEBUG = False # Load only a few images (4) and train for a few epochs (3)
+    DEBUG = True # Load only a few images (4) and train for a few epochs (3)
     REDUCE_MODALITIES = True  # Select this as True to drop low priority modalities
 
     # timestamp experiment to organize results
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
 
     output_path = output_path_dict['colab']
-    output_path = os.path.join(output_path,'experiment_{}'.format(timestamp))
+    output_path = os.path.join(output_path,'reconstruct','experiment_{}'.format(timestamp))
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
