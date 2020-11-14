@@ -77,6 +77,7 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
 
 if __name__ == '__main__':
     DEBUG = True # Load only a few images (4) and train for a few epochs (3)
+    REDUCE_MODALITIES = True  # Select this as True to drop low priority modalities
 
 
     output_path_dict = {'aws': '/home/ubuntu/',
@@ -159,8 +160,13 @@ if __name__ == '__main__':
 
     for i, imgs in enumerate(data_paths[:endpoint]):
         try:
-            data[i] = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
-                               dtype=np.float32)
+            temp = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
+                            dtype=np.float32)
+            if reduce_modalities:
+                temp[0, :, :, :] = 0
+                temp[1, :, :, :] = 0
+
+            data[i] = temp
             labels[i] = preprocess_label(read_img(imgs['seg']), input_shape[1:])[None, ...]
 
             if ~np.isfinite(data[i]).any() or ~np.isfinite(labels[i]).any():
