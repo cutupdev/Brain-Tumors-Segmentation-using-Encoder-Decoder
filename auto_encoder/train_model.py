@@ -79,37 +79,39 @@ if __name__ == '__main__':
     DEBUG = True # Load only a few images (4) and train for a few epochs (3)
 
     # Re-load existing model from Keras checkpoint and resume training. If reload_path = '', train as new model
-    reload_path = '/home/ubuntu/checkpoints/model_training_11_03/ae_weights.400-0.00843.hdf5'
+    # reload_path = '/home/ubuntu/checkpoints/model_training_11_03/ae_weights.400-0.00843.hdf5'
+    reload_path = ''
 
     # path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/Users/wslee-2/Data/brats-data/MICCAI_BraTS_2018_Data_Training'
 
     #################### 2018 data #######################
+    path = '/gdrive/Shared drives/CS230 - Term Project/data/BraTS_2018/MICCAI_BraTS_2018_Data_Training/'
     # path = '/home/ubuntu/data/brats-data/MICCAI_BraTS_2018_Data_Training'
     #
-    # # Import data
-    # # Get a list of files for all modalities individually
-    # t1 = glob.glob(os.path.join(path, '*GG/*/*t1.nii.gz'))
-    # t2 = glob.glob(os.path.join(path, '*GG/*/*t2.nii.gz'))
-    # flair = glob.glob(os.path.join(path, '*GG/*/*flair.nii.gz'))
-    # t1ce = glob.glob(os.path.join(path, '*GG/*/*t1ce.nii.gz'))
-    # seg = glob.glob(os.path.join(path, '*GG/*/*seg.nii.gz'))  # Ground Truth
-    #
-    # pat = re.compile('.*_(\w*)\.nii\.gz')
+    # Import data
+    # Get a list of files for all modalities individually
+    t1 = glob.glob(os.path.join(path, '*GG/*/*t1.nii.gz'))
+    t2 = glob.glob(os.path.join(path, '*GG/*/*t2.nii.gz'))
+    flair = glob.glob(os.path.join(path, '*GG/*/*flair.nii.gz'))
+    t1ce = glob.glob(os.path.join(path, '*GG/*/*t1ce.nii.gz'))
+    seg = glob.glob(os.path.join(path, '*GG/*/*seg.nii.gz'))  # Ground Truth
+
+    pat = re.compile('.*_(\w*)\.nii\.gz')
 
     ###################### 2020 data ####################
 
-    path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
-
-    # Import data
-    # Get a list of files for all modalities individually
-    t1 = glob.glob(os.path.join(path, '*/*t1.nii.gz'))
-    t2 = glob.glob(os.path.join(path, '*/*t2.nii.gz'))
-    flair = glob.glob(os.path.join(path, '*/*flair.nii.gz'))
-    t1ce = glob.glob(os.path.join(path, '*/*t1ce.nii.gz'))
-    seg = glob.glob(os.path.join(path, '*/*seg.nii.gz'))  # Ground Truth
-
-    pat = re.compile('.*_(\w*)\.nii\.gz')
+    # path = '/home/ubuntu/data/brats-data/MICCAI_BraTS2020_TrainingData'
+    #
+    # # Import data
+    # # Get a list of files for all modalities individually
+    # t1 = glob.glob(os.path.join(path, '*/*t1.nii.gz'))
+    # t2 = glob.glob(os.path.join(path, '*/*t2.nii.gz'))
+    # flair = glob.glob(os.path.join(path, '*/*flair.nii.gz'))
+    # t1ce = glob.glob(os.path.join(path, '*/*t1ce.nii.gz'))
+    # seg = glob.glob(os.path.join(path, '*/*seg.nii.gz'))  # Ground Truth
+    #
+    # pat = re.compile('.*_(\w*)\.nii\.gz')
 
     history = History()  # Initialize history to record training loss
 
