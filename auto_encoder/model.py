@@ -261,8 +261,8 @@ def build_model(input_shape=(4, 160, 192, 128), output_channels=3, weight_L2=0.1
     ## Input Layer
     inp = Input(input_shape)
 
-    ## Dropout Input Layer (starting 50% for removal of 2 modalities)
-    x = SpatialDropout3D(input_dropout_rate, data_format='channels_first')(x)
+    # ## Dropout Input Layer (starting 50% for removal of 2 modalities)
+    # x = SpatialDropout3D(input_dropout_rate, data_format='channels_first')(x)
 
     ## The Initial Block
     x = Conv3D(
