@@ -206,8 +206,10 @@ if __name__ == '__main__':
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
     timestamp = str(timestamp)
 
-    filepath_checkpoint = os.path.join(output_path,'checkpoints','checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5')
-    filepath_csv = os.path.join(output_path,'checkpoints','log_{}.csv'.format(timestamp))
+    # filepath_checkpoint = os.path.join(output_path,'checkpoints','checkpoints/ae_weights.{epoch:03d}-{loss:.5f}.hdf5')
+    # filepath_csv = os.path.join(output_path,'checkpoints','log_{}.csv'.format(timestamp))
+    filepath_checkpoint = 'ae_weights.{epoch:03d}-{loss:.5f}.hdf5'
+    filepath_csv = 'log_{}.csv'.format(timestamp)
 
     checkpoint = ModelCheckpoint(filepath = filepath_checkpoint, monitor='loss', verbose=1, save_best_only=True, mode='min')
 
@@ -224,8 +226,10 @@ if __name__ == '__main__':
 
     model.fit(data, [labels, data], batch_size=batch_size, epochs=epochs, callbacks=callbacks_list)
 
-    filepath_model = os.path.join(output_path,'model_ae_{}_{}_tf'.format(epochs, timestamp))
-    filepath_results_dict = os.path.join(output_path,'model_ae_{}_{}_dict'.format(epochs, timestamp))
+    # filepath_model = os.path.join(output_path,'model_ae_{}_{}_tf'.format(epochs, timestamp))
+    # filepath_results_dict = os.path.join(output_path,'model_ae_{}_{}_dict'.format(epochs, timestamp))
+    filepath_model = 'model_ae_{}_{}_tf'.format(epochs, timestamp)
+    filepath_results_dict = 'model_ae_{}_{}_dict'.format(epochs, timestamp)
     model.save(filepath_model,save_format='tf')
     print(history.history)
     with open(filepath_results_dict.format(epochs, timestamp), 'wb') as file_pi:
