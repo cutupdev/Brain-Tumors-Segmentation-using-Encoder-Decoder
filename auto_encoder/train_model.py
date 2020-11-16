@@ -174,7 +174,7 @@ if __name__ == '__main__':
     bad_frames = [] # keep list of any frames with nan or inf
 
     for i, imgs in enumerate(data_paths[:endpoint]):
-        # try:
+        try:
             temp = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                             dtype=np.float32)
             if REDUCE_MODALITIES:
@@ -194,9 +194,9 @@ if __name__ == '__main__':
                          f"[{'=' * int((i + 1) * step) + ' ' * (24 - int((i + 1) * step))}]"
                          f"({math.ceil((i + 1) * 100 / (total))} %)",
                   end='')
-        # except Exception as e:
-        #     print(f'Something went wrong with {imgs["t1"]}, skipping...\n Exception:\n{str(e)}')
-        #     continue
+        except Exception as e:
+            print(f'Something went wrong with {imgs["t1"]}, skipping...\n Exception:\n{str(e)}')
+            continue
 
     # Remove any bad frames
     if len(bad_frames) > 0:
