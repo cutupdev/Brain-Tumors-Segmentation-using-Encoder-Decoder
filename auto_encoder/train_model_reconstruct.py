@@ -162,7 +162,8 @@ if __name__ == '__main__':
     output_channels = 3
 
     data = np.empty((len(data_paths[:endpoint]),) + input_shape, dtype=np.float32)
-    labels = np.empty((len(data_paths[:endpoint]), output_channels) + input_shape[1:], dtype=np.uint8)
+    labels = np.empty((len(data_paths[:endpoint]),) + input_shape, dtype=np.float32)
+    # labels = np.empty((len(data_paths[:endpoint]), output_channels) + input_shape[1:], dtype=np.uint8)
 
     import math
     print('reading images...')
