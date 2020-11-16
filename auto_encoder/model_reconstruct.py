@@ -407,7 +407,7 @@ def build_model(input_shape=(4, 160, 192, 128), output_channels=4, weight_L2=0.1
     out = out_VAE
     model = Model(inp, outputs=[out])  # Create the model
     model.compile(
-        adam(lr=1e-4),
+        adam(lr=1e-5),
         [loss_VAE(input_shape, z_mean, z_var, weight_L2=weight_L2, weight_KL=weight_KL)],
         metrics=[loss_VAE(input_shape, z_mean, z_var, weight_L2=weight_L2, weight_KL=weight_KL)]
     )
