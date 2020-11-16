@@ -16,9 +16,10 @@ from model_reconstruct import build_model  # For creating the model
 import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
-import os, pickle
+import os, pickle, cv2
 from keras.callbacks import History, ModelCheckpoint, CSVLogger
 from datetime import datetime
+import random
 from keras.models import load_model
 
 def read_img(img_path):
@@ -54,7 +55,12 @@ def preprocess(img, out_shape=None):
     # Normalize the image
     mean = img.mean()
     std = img.std()
-    return (img - mean) / std
+
+    norm = (img - mean) / std
+    kernel = np.ones((3, 3))
+    smooth_norm = cv2.morphologyEx(norm, cv2.MORPH_CLOSE, kernel, iterations=3)
+
+    return smooth_norm
 
 
 def preprocess_label(img, out_shape=None, mode='nearest'):
@@ -72,7 +78,12 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
         ed = resize(ed, out_shape, mode=mode)
         et = resize(et, out_shape, mode=mode)
 
-    return np.array([ncr, ed, et], dtype=np.uint8)
+    kernel = np.ones((3, 3))
+    smooth_ncr = cv2.morphologyEx(np.float32(ncr), cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_ed = cv2.morphologyEx(np.float32(ed), cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_et = cv2.morphologyEx(np.float32(et), cv2.MORPH_CLOSE, kernel, iterations=3)
+
+    return np.array([smooth_ncr, smooth_ed, smooth_et], dtype=np.uint8)
 
 
 if __name__ == '__main__':
@@ -135,34 +146,30 @@ if __name__ == '__main__':
     }
         for items in list(zip(t1, t2, t1ce, flair, seg))]
 
+    # Shuffle data paths (will keep some for validation set)
+    random.Random(1).shuffle(data_paths) # use seed = 1 to get same shuffling every time we run the code
+
     # Initialize memory
     input_shape = (4, 80, 96, 64)
     #if DEBUG:
     #    input_shape = (4, 80, 96, 64)
 
-    output_channels = 4
-
-    # labels will have the same dimensions as input
-    data = np.empty((len(data_paths),) + input_shape, dtype=np.float32)
-    labels = np.empty((len(data_paths),) + input_shape, dtype=np.float32)
-
+    endpoint = int(len(data_paths)*0.9)
     if DEBUG:
-        data = np.empty((len(data_paths[:4]),) + input_shape, dtype=np.float32)
-        labels = np.empty((len(data_paths[:4]),) + input_shape, dtype=np.float32)
+        endpoint = 4
+
+
+    output_channels = 3
+
+    data = np.empty((len(data_paths[:endpoint]),) + input_shape, dtype=np.float32)
+    labels = np.empty((len(data_paths[:endpoint]), output_channels) + input_shape[1:], dtype=np.uint8)
 
     import math
     print('reading images...')
     # Parameters for the progress bar
-    total = len(data_paths)
-
-    if DEBUG:
-        total = len(data_paths[:4])
+    total = len(data_paths[:endpoint])
 
     step = 25 / total
-    endpoint = -1
-
-    if DEBUG:
-        endpoint = 4
 
     bad_frames = [] # keep list of any frames with nan or inf
 
