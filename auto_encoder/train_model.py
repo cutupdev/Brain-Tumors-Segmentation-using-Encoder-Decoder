@@ -19,6 +19,7 @@ import re  # For parsing the filenames (to know their modality)
 import os, pickle, cv2
 from keras.callbacks import History, ModelCheckpoint, CSVLogger
 from datetime import datetime
+import random
 from keras.models import load_model
 
 def read_img(img_path):
@@ -145,14 +146,17 @@ if __name__ == '__main__':
     }
         for items in list(zip(t1, t2, t1ce, flair, seg))]
 
+    # Shuffle data paths (will keep some for validation set)
+    random.Random(1).shuffle(data_paths) # use seed = 1 to get same shuffling every time we run the code
+
     # Initialize memory
     input_shape = (4, 80, 96, 64)
     #if DEBUG:
     #    input_shape = (4, 80, 96, 64)
 
-    endpoint = -1
+    endpoint = int(len(data_paths)*0.9)
     if DEBUG:
-        endpoint = 20    
+        endpoint = 4
 
 
     output_channels = 3
@@ -208,7 +212,7 @@ if __name__ == '__main__':
     # Model training
     batch_size = 1
     if DEBUG:
-        epochs = 10
+        epochs = 3
     else:
         epochs = 400
 
