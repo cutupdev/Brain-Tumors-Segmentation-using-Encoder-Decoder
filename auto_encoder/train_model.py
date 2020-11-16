@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
 
     output_path = output_path_dict['colab']
-    output_path = os.path.join(output_path,'experiment_{}'.format(timestamp))
+    output_path = os.path.join(output_path,'segmentation','experiment_{}'.format(timestamp))
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -150,27 +150,22 @@ if __name__ == '__main__':
     #if DEBUG:
     #    input_shape = (4, 80, 96, 64)
 
-    output_channels = 3
-    data = np.empty((len(data_paths),) + input_shape, dtype=np.float32) 
-    labels = np.empty((len(data_paths), output_channels) + input_shape[1:], dtype=np.uint8)
-
+    endpoint = -1
     if DEBUG:
-        data = np.empty((len(data_paths[:4]),) + input_shape, dtype=np.float32)
-        labels = np.empty((len(data_paths[:4]), output_channels) + input_shape[1:], dtype=np.uint8)
+        endpoint = 20    
+
+
+    output_channels = 3
+
+    data = np.empty((len(data_paths[:endpoint]),) + input_shape, dtype=np.float32)
+    labels = np.empty((len(data_paths[:endpoint]), output_channels) + input_shape[1:], dtype=np.uint8)
 
     import math
     print('reading images...')
     # Parameters for the progress bar
-    total = len(data_paths)
-
-    if DEBUG:
-        total = len(data_paths[:4])
+    total = len(data_paths[:endpoint])
 
     step = 25 / total
-    endpoint = -1
-
-    if DEBUG:
-        endpoint = 4
 
     bad_frames = [] # keep list of any frames with nan or inf
 
@@ -213,7 +208,7 @@ if __name__ == '__main__':
     # Model training
     batch_size = 1
     if DEBUG:
-        epochs = 3
+        epochs = 10
     else:
         epochs = 400
 
