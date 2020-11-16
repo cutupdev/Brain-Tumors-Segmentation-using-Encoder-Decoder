@@ -78,9 +78,9 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
         et = resize(et, out_shape, mode=mode)
 
     kernel = np.ones((3, 3))
-    smooth_ncr = cv2.morphologyEx(ncr, cv2.MORPH_CLOSE, kernel, iterations=3)
-    smooth_ed = cv2.morphologyEx(ed, cv2.MORPH_CLOSE, kernel, iterations=3)
-    smooth_et = cv2.morphologyEx(et, cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_ncr = cv2.morphologyEx(np.float32(ncr), cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_ed = cv2.morphologyEx(np.float32(ed), cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_et = cv2.morphologyEx(np.float32(et), cv2.MORPH_CLOSE, kernel, iterations=3)
 
     return np.array([smooth_ncr, smooth_ed, smooth_et], dtype=np.uint8)
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     bad_frames = [] # keep list of any frames with nan or inf
 
     for i, imgs in enumerate(data_paths[:endpoint]):
-        try:
+        # try:
             temp = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                             dtype=np.float32)
             if REDUCE_MODALITIES:
@@ -195,9 +195,9 @@ if __name__ == '__main__':
                          f"[{'=' * int((i + 1) * step) + ' ' * (24 - int((i + 1) * step))}]"
                          f"({math.ceil((i + 1) * 100 / (total))} %)",
                   end='')
-        except Exception as e:
-            print(f'Something went wrong with {imgs["t1"]}, skipping...\n Exception:\n{str(e)}')
-            continue
+        # except Exception as e:
+        #     print(f'Something went wrong with {imgs["t1"]}, skipping...\n Exception:\n{str(e)}')
+        #     continue
 
     # Remove any bad frames
     if len(bad_frames) > 0:
