@@ -16,7 +16,7 @@ from model import build_model  # For creating the model
 import glob  # For populating the list of files
 from scipy.ndimage import zoom  # For resizing
 import re  # For parsing the filenames (to know their modality)
-import os, pickle
+import os, pickle, cv2
 from keras.callbacks import History, ModelCheckpoint, CSVLogger
 from datetime import datetime
 from keras.models import load_model
@@ -54,7 +54,12 @@ def preprocess(img, out_shape=None):
     # Normalize the image
     mean = img.mean()
     std = img.std()
-    return (img - mean) / std
+
+    norm = (img - mean) / std
+    kernel = np.ones((3, 3))
+    smooth_norm = cv2.morphologyEx(norm, cv2.MORPH_CLOSE, kernel, iterations=3)
+
+    return smooth_norm
 
 
 def preprocess_label(img, out_shape=None, mode='nearest'):
@@ -72,12 +77,17 @@ def preprocess_label(img, out_shape=None, mode='nearest'):
         ed = resize(ed, out_shape, mode=mode)
         et = resize(et, out_shape, mode=mode)
 
-    return np.array([ncr, ed, et], dtype=np.uint8)
+    kernel = np.ones((3, 3))
+    smooth_ncr = cv2.morphologyEx(ncr, cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_ed = cv2.morphologyEx(ed, cv2.MORPH_CLOSE, kernel, iterations=3)
+    smooth_et = cv2.morphologyEx(et, cv2.MORPH_CLOSE, kernel, iterations=3)
+
+    return np.array([smooth_ncr, smooth_ed, smooth_et], dtype=np.uint8)
 
 
 if __name__ == '__main__':
-    DEBUG = False # Load only a few images (4) and train for a few epochs (3)
-    REDUCE_MODALITIES = True  # Select this as True to drop low priority modalities
+    DEBUG = True # Load only a few images (4) and train for a few epochs (3)
+    REDUCE_MODALITIES = False  # Select this as True to drop low priority modalities
 
     # timestamp experiment to organize results
     timestamp = datetime.today().strftime('%Y-%m-%d-%H%M')
@@ -169,8 +179,8 @@ if __name__ == '__main__':
             temp = np.array([preprocess(read_img(imgs[m]), input_shape[1:]) for m in ['t1', 't2', 't1ce', 'flair']],
                             dtype=np.float32)
             if REDUCE_MODALITIES:
-                temp[0, :, :, :] = 1e-6
-                temp[1, :, :, :] = 1e-6
+                temp[0, :, :, :] = np.random.normal(loc=0, scale=1, size=temp.shape[1:])
+                temp[1, :, :, :] = np.random.normal(loc=0, scale=1, size=temp.shape[1:])
 
             data[i] = temp
             labels[i] = preprocess_label(read_img(imgs['seg']), input_shape[1:])[None, ...]

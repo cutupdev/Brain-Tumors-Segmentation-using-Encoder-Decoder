@@ -173,7 +173,7 @@ if __name__ == '__main__':
             labels[i] = temp
 
             # initialize missing modes with zero mean small values
-            temp[0, :, :, :] = np.random.normal(loc=0, scale=1, size=temp.shape[0:])
+            temp[0, :, :, :] = np.random.normal(loc=0, scale=1, size=temp.shape[1:])
             temp[1, :, :, :] = np.random.normal(loc=0, scale=1, size=temp.shape[1:])
 
             data[i] = temp
